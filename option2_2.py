@@ -1,0 +1,109 @@
+import streamlit as st
+from utils import extract_cv_information, extract_job_posting_information_from_str, resume_education_info_personal,resume_promt_summary,resume_delete_experience_not_related,resume_skills, validate_with_gemini
+
+import pymongo
+import pandas as pd
+from bson import ObjectId  # Required for handling MongoDB ObjectId
+import json
+
+var_back_to_job_seleccion = "⬅️ Back to Job Selection"
+print("entro option 2_2")
+def run():
+    st.markdown("<h1 style='text-align: center; font-size: 50px;'>Tailor My Resume for the Selected Jobs</h1>", unsafe_allow_html=True)
+
+    selected_job = st.session_state["selected_jobs"]
+
+    for index, row in selected_job.iterrows():
+        extract_job_posting_information_from_str(row["Job Description"])
+
+    uploaded_cv = st.session_state["uploaded_cv_pdf"]
+
+    # Process when both CV and job data are available
+    if uploaded_cv is not None:
+        st.write("Processing your resume...")
+
+        extract_cv_information(uploaded_cv)
+
+        for index,row in selected_job.iterrows():
+            resume_education_info_personal()
+            resume_promt_summary()
+            resume_skills()
+            resume_delete_experience_not_related()
+            
+            # Verificar si todos los achievements están vacíos
+            # Load the resume data
+            file_path = "resume/resume_delete_experience_not_relate.json"
+            with open(file_path, "r", encoding="utf-8") as file_load:
+                filter_to_continue = json.load(file_load)
+
+            if all(not experience["achievement"] for experience in filter_to_continue["work_experience"]):
+                print("entro line 46")
+                st.warning(
+                    "⚠️ Sorry, none of your experiences match the job posting. "
+                    "We recommend rewriting your achievements to better highlight relevant skills and trying again. "
+                    "Click below to return to the home page."
+                )
+                if st.button("🏠 Back to Home"):
+                    st.session_state.page = "Home"
+                    st.rerun()
+            
+            else:
+                st.session_state.page == "analize_skills"
+                # Inicializar session state si no existe
+                if "achievements_pass" not in st.session_state:
+                    st.session_state.achievements_pass = []
+
+                if "achievements_do_not_pass" not in st.session_state:
+                    st.session_state.achievements_do_not_pass = []
+
+                # Load the resume data
+                file_path = "resume/resume_delete_experience_not_relate.json"
+
+                with open(file_path, "r", encoding="utf-8") as file_load:
+                    resume_data = json.load(file_load)
+
+                work_experience = resume_data.get("work_experience", [])
+
+                # Procesar los logros y validarlos
+                for job in work_experience:
+                    st.write(f"### Evaluando logros para: {job['job_title']} en {job['company']}")
+                    
+                    for achievement in job["achievement"]:
+                        is_valid, feedback = validate_with_gemini(job['job_title'], achievement)
+
+                        if is_valid:
+                            st.session_state.achievements_pass.append(
+                                {"job_title": job['job_title'], "achievement": achievement, "company":job['company'], "key":job['key'] }
+                            )
+                        else:
+                            st.session_state.achievements_do_not_pass.append(
+                                {"job_title": job['job_title'], "achievement": achievement, "feedback": feedback,  "company":job['company'], "key":job['key']}
+                            )
+
+                # Mostrar resultados
+                st.write("## ✅ Logros Validados")
+                st.write(st.session_state.achievements_pass)
+
+                st.write("## ❌ Logros que necesitan mejora")
+                for item in st.session_state.achievements_do_not_pass:
+                    st.write(f"- **{item['key']}**: {item['achievement']}")
+
+                st.session_state.page = "improve_skills"
+                if st.button("Improve skills"):
+                    st.write(st.session_state.page)
+                    st.rerun()
+
+
+
+    # Navigation buttons
+    col1, col2 = st.columns([1, 1])
+
+    with col1:
+        if st.button(var_back_to_job_seleccion):
+            st.session_state.page = "Option1_2"
+            st.rerun()
+
+    with col2:
+        if st.button("🏠 Back to Home"):
+            st.session_state.page = "Home"
+            st.rerun()

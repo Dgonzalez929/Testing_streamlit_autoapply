@@ -1,0 +1,86 @@
+{
+    "job_title": "Data & Analytics Analyst Intern",
+    "company": {
+        "name": "Trust Science",
+        "industry": "FinTech SaaS",
+        "location": "Edmonton, AB",
+        "remote": true
+    },
+    "employment_type": "Internship",
+    "experience_level": null,
+    "years_of_experience_required": null,
+    "salary_range": {
+        "min": null,
+        "max": null,
+        "currency": null,
+        "payment_frequency": null
+    },
+    "job_description": "Join our team as a Data & Analytics Analyst Intern to shape the future of financial services through strategic insights and innovative thinking, contributing to our ambitious growth initiatives. This is a 4-month internship starting in May 2025 (with potential for extension).",
+    "responsibilities": [
+        "Apply data science and data analytics techniques to support business analytics projects.",
+        "Develop, evaluate, and refine decisioning flows and credit risk strategies.",
+        "Assist in the development, validation, documentation, deployment, and monitoring of machine learning models used in the consumer lending industry.",
+        "Assess model adequacy and appropriateness based on business objectives, assumptions, and performance.",
+        "Identify and evaluate predictive attributes for credit decisioning and fraud detection.",
+        "Design, implement, and optimize model and credit monitoring dashboards to provide actionable insights.",
+        "Ensure dashboards meet client-specific requirements and align with organizational goals.",
+        "Leverage up-to-date data science techniques to enhance credit monitoring and evaluation processes.",
+        "Stay current with industry technology and best practices in credit risk management, data visualization, and decision strategy implementation.",
+        "Manage time-sensitive projects and deliverables independently with a focus on accuracy and attention to detail.",
+        "Collaborate with cross-functional teams to align project outcomes with business objectives.",
+        "Partner with internal and external stakeholders to refine credit monitoring strategies.",
+        "Prepare clear, data-driven reports and presentations for decision-makers.",
+        "Identify areas for process improvement and implement innovative solutions.",
+        "Monitor the performance of dashboards and decision-making models, making necessary adjustments to maintain effectiveness.",
+        "Other projects and/or duties as assigned by your Supervisor from time to time."
+    ],
+    "requirements": [
+        "Currently pursuing a Master's degree in Data Science, Computer Science, Statistics, Mathematics, Economics, Finance, or a related field (strong applicants at the senior undergraduate level may also be considered).",
+        "Strong programming experience in Python for data analysis, machine learning, and automation.",
+        "Proficiency in SQL for querying and manipulating large datasets.",
+        "Solid understanding of machine learning techniques and experience working with structured and unstructured data.",
+        "Strong problem-solving skills, with the ability to independently identify and address challenges effectively and efficiently.",
+        "Excellent communication skills, both written and verbal, with the ability to convey complex findings to both technical and non-technical audiences.",
+        "Ability to multi-task and prioritize in a fast-paced, dynamic work environment.",
+        "Team-oriented mindset, with the ability to collaborate effectively while also working independently.",
+        "Analytical and strategic thinker who is eager to learn and contribute to meaningful projects."
+    ],
+    "technical_skills": [
+        "Python",
+        "SQL",
+        "Machine Learning",
+        "Data Analysis",
+        "Data Visualization",
+        "Big Data Technologies (Spark, Hadoop, AWS, or Google Cloud)",
+        "Tableau",
+        "Power BI",
+        "NLP",
+        "Text Analytics"
+    ],
+    "soft_skills": [
+        "Communication (written and verbal)",
+        "Problem-solving",
+        "Analytical thinking",
+        "Strategic thinking",
+        "Teamwork",
+        "Independent work",
+        "Prioritization",
+        "Adaptability",
+        "Curiosity",
+        "Professional development commitment"
+    ],
+    "education_required": [
+        {
+            "degree": "Master's",
+            "field_of_study": "Data Science, Computer Science, Statistics, Mathematics, Economics, Finance, or a related field",
+            "preferred_institutions": []
+        }
+    ],
+    "benefits": [
+        "Flexible schedule",
+        "Work from home"
+    ],
+    "application_deadline": null,
+    "job_posting_date": null,
+    "application_link": "www.TrustScience.com"
+}
