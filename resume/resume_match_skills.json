@@ -1,10 +1,7 @@
 {
     "technical_skills": [
-        "SQL",
-        "Tableau",
-        "Machine Learning"
+        "Machine Learning",
+        "SQL"
     ],
-    "soft_skills": [
-        "Adaptability"
-    ]
+    "soft_skills": []
 }

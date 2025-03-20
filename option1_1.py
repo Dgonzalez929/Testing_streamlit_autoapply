@@ -1,17 +1,9 @@
 # option1.py
-from pypdf import PdfReader
-import docx
-import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import streamlit as st
-import google.generativeai as genai
-import io
-from io import BytesIO
 from utils import extract_cv_information, extract_job_posting_information,resume_education_info_personal,resume_promt_summary,resume_delete_experience_not_related,resume_skills, validate_with_gemini
-import pymongo
 import json
-import improve_skills
 
 def run():
     st.markdown("<h1 style='text-align: center; font-size: 50px;'>Tailor my resume for a specific job opportunity</h1>", unsafe_allow_html=True)

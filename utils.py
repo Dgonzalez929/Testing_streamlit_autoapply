@@ -1,11 +1,9 @@
-import openai
 import json
 import streamlit as st
 import pandas as pd
 import google.generativeai as genai
 from pypdf import PdfReader
 from io import BytesIO
-import numpy as np
 import re
 
 

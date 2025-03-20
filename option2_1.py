@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+from pypdf import PdfReader
 
 def run():
     st.markdown("""
@@ -19,8 +20,7 @@ def run():
         if file_extension == "txt":
             resume_text = uploaded_file.getvalue().decode("utf-8")
         elif file_extension == "pdf":
-            import PyPDF2
-            reader = PyPDF2.PdfReader(uploaded_file)
+            reader = PdfReader(uploaded_file)
             resume_text = "\n".join([page.extract_text() for page in reader.pages if page.extract_text()])
         else:
             st.error("Unsupported file format. Please upload a .txt or .pdf file.")

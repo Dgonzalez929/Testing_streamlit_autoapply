@@ -7,15 +7,15 @@
         "remote": true
     },
     "employment_type": "Internship",
-    "experience_level": null,
-    "years_of_experience_required": null,
+    "experience_level": "Entry Level",
+    "years_of_experience_required": 0,
     "salary_range": {
         "min": null,
         "max": null,
         "currency": null,
         "payment_frequency": null
     },
-    "job_description": "Join our team as a Data & Analytics Analyst Intern to shape the future of financial services through strategic insights and innovative thinking, contributing to our ambitious growth initiatives. This is a 4-month internship starting in May 2025 (with potential for extension).",
+    "job_description": "The Data & Analytics Analyst Intern will contribute to Trust Science's ambitious growth initiatives, shaping the future of financial services through strategic insights and innovative thinking.",
     "responsibilities": [
         "Apply data science and data analytics techniques to support business analytics projects.",
         "Develop, evaluate, and refine decisioning flows and credit risk strategies.",
@@ -50,24 +50,17 @@
         "SQL",
         "Machine Learning",
         "Data Analysis",
-        "Data Visualization",
-        "Big Data Technologies (Spark, Hadoop, AWS, or Google Cloud)",
-        "Tableau",
-        "Power BI",
-        "NLP",
-        "Text Analytics"
+        "Data Visualization"
     ],
     "soft_skills": [
-        "Communication (written and verbal)",
+        "Communication",
         "Problem-solving",
+        "Teamwork",
         "Analytical thinking",
         "Strategic thinking",
-        "Teamwork",
-        "Independent work",
+        "Time management",
         "Prioritization",
-        "Adaptability",
-        "Curiosity",
-        "Professional development commitment"
+        "Attention to detail"
     ],
     "education_required": [
         {
