@@ -7,7 +7,7 @@ from io import BytesIO
 import re
 
 
-your_api_key = "AIzaSyAW52LT_CaFAl7emx0xiLCkvQvYILAobkk"
+your_api_key = "AIzaSyB5QijjcZTlr6zAPhklvGczG70ZovbAfvM"
 model_gemini = "models/gemini-2.0-flash"
 clean_json = "```json\n"
 
