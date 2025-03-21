@@ -7,7 +7,7 @@ from io import BytesIO
 import re
 
 
-your_api_key = "AIzaSyB5QijjcZTlr6zAPhklvGczG70ZovbAfvM"
+your_api_key = st.secrets["api_keys"]["GEMINI_API_KEY"]
 model_gemini = "models/gemini-2.0-flash"
 clean_json = "```json\n"
 
@@ -24,7 +24,7 @@ def join_all_resume_json():
     with open(input_filepath, "r", encoding="utf-8") as file_load:
        skills_json = json.load(file_load)
 
-    # Crear un conjunto para evitar duplicados
+    # Create a set to avoid duplicates
     combined_skills = set(skills_json["technical_skills"] + skills_json["soft_skills"])
 
     input_filepath = "resume/resume_user_answers.json"
@@ -32,12 +32,15 @@ def join_all_resume_json():
         with open(input_filepath, "r", encoding="utf-8") as file_load:
             user_answers = json.load(file_load)
 
-        # Agregar skills de user_answers
-        for key, skills in user_answers.items():
-            combined_skills.update(skills.get("technical_skills", {}).keys())
-            combined_skills.update(skills.get("soft_skills", {}).keys())
+        # Add user_answers skills
+        for entry in user_answers:
+            print(entry)
+            skill = entry.get("skill")
+            if isinstance(skill, str):
+                combined_skills.add(skill)
 
-    # Convertir el conjunto a una lista y estructurar en el nuevo JSON
+
+    # Convert the set to a list and structure it in the new JSON
     final_skills_json = {"skills": list(combined_skills)}
 
     input_filepath = "resume/resume_final_experience.json"
@@ -103,50 +106,42 @@ def validate_with_gemini(skill, detail):
 
 
 def resume_skills():
-    # Especifica la ruta del archivo que deseas leer
     input_filepath = f"resume/resume.json"
 
     with open(input_filepath, "r", encoding="utf-8") as file_load:
        cv_data = json.load(file_load)
 
-    # Especifica la ruta del archivo que deseas leer
     input_filepath = f"resume/job_posting.json"
 
     with open(input_filepath, "r", encoding="utf-8") as file_load:
        job_data = json.load(file_load)
 
-    # Extract skills from resume and job posting
     cv_technical_skills = set(cv_data.get("technical_skills", []))
     job_technical_skills = set(job_data.get("technical_skills", []))
 
     cv_soft_skills = set(cv_data.get("soft_skills", []))
     job_soft_skills = set(job_data.get("soft_skills", []))
 
-    # skills that are **in the job posting** but **not in the resume**
     missing_technical_skills = list(job_technical_skills - cv_technical_skills)[:5]
     missing_soft_skills = list(job_soft_skills - cv_soft_skills)[:5]
 
-    # Skills that are **in both** the job posting and the resume
     match_technical_skills = list(cv_technical_skills & job_technical_skills)
     match_soft_skills = list(cv_soft_skills & job_soft_skills)
 
-    # Create a JSON file with missing skills
     missing_skills = {
         "technical_skills": missing_technical_skills,
         "soft_skills": missing_soft_skills
     }
 
-    # Create a JSON file with missing skills
     match_skills = {
         "technical_skills": match_technical_skills,
         "soft_skills": match_soft_skills
     }
-    # Save missing skills to a JSON file
+
     with open("resume/resume_missing_skills.json", "w") as file:
         json.dump(missing_skills, file, indent=4)
     print("Skills missing saved in 'resume/resume_missing_skills.json'.")
 
-        # Save missing skills to a JSON file
     with open("resume/resume_match_skills.json", "w") as file:
         json.dump(match_skills, file, indent=4)
     print("Skills missing saved in 'resume/resume_match_skills.json'.")
@@ -154,9 +149,8 @@ def resume_skills():
 
 
 def resume_education_info_personal():
-    # Especifica la ruta del archivo que deseas leer
-    input_filepath = f"resume/resume.json"
 
+    input_filepath = f"resume/resume.json"
     with open(input_filepath, "r", encoding="utf-8") as file_load:
        original_cv = json.load(file_load)
     
@@ -165,22 +159,20 @@ def resume_education_info_personal():
         "education": original_cv.get("education", {})
     }
 
-    # Save the result to the output file
+
     output_filepath = f"resume/resume_education_info_personal.json"
     with open(output_filepath, "w", encoding="utf-8") as file_save:
         json.dump(output_file, file_save, ensure_ascii=False, indent=4)
         print(f"Output saved to '{output_filepath}'.")
 
 def resume_promt_summary():
-    # Especifica la ruta del archivo que deseas leer
-    input_filepath = f"resume/resume.json"
 
+    input_filepath = f"resume/resume.json"
     with open(input_filepath, "r", encoding="utf-8") as file_load:
        resume = json.load(file_load)
     
-    # Especifica la ruta del archivo que deseas leer
-    input_filepath = f"resume/job_posting.json"
 
+    input_filepath = f"resume/job_posting.json"
     with open(input_filepath, "r", encoding="utf-8") as file_load:
        job_offer = json.load(file_load)
     
@@ -211,7 +203,7 @@ def resume_promt_summary():
     cleaned_response = response.text.strip(clean_json).strip("```").replace("\n", "")
 
     json_file = json.loads(cleaned_response)
-    # Save the result to the output file
+
     output_filepath = f"resume/resume_summary.json"
     with open(output_filepath, "w", encoding="utf-8") as file_save:
         json.dump(json_file, file_save, ensure_ascii=False, indent=4)
@@ -219,15 +211,13 @@ def resume_promt_summary():
 
 
 def resume_delete_experience_not_related():
-    # Especifica la ruta del archivo que deseas leer
-    input_filepath = f"resume/resume.json"
 
+    input_filepath = f"resume/resume.json"
     with open(input_filepath, "r", encoding="utf-8") as file_load:
        resume = json.load(file_load)
     
     job_experience = {"work_experience":resume.get("work_experience", {})}
     
-    # Especifica la ruta del archivo que deseas leer
     input_filepath = f"resume/job_posting.json"
     with open(input_filepath, "r", encoding="utf-8") as file_load:
        job_offer = json.load(file_load)
@@ -277,17 +267,13 @@ def customize_cv() -> dict:
     Do not invent new content; only enhance and reorganize the existing information.
     """
 
-    # Especifica la ruta del archivo que deseas leer
-    input_filepath = f"resume/resume.json"
 
-    # Abre y carga el contenido del archivo JSON
+    input_filepath = f"resume/resume.json"
     with open(input_filepath, "r", encoding="utf-8") as file_load:
         original_cv = json.load(file_load)
 
-    # Especifica la ruta del archivo que deseas leer
-    input_filepath = f"resume/job_posting.json"
 
-    # Abre y carga el contenido del archivo JSON
+    input_filepath = f"resume/job_posting.json"
     with open(input_filepath, "r", encoding="utf-8") as file_load:
         job_description = json.load(file_load)\
     
@@ -340,7 +326,7 @@ def customize_cv() -> dict:
     cleaned_response = response.text.strip(clean_json).strip("```").replace("\n", "")
 
     json_file = json.loads(cleaned_response)
-    # Save the result to the output file
+
     output_filepath = f"resume/resume_customization.json"
     with open(output_filepath, "w", encoding="utf-8") as file_save:
         json.dump(json_file, file_save, ensure_ascii=False, indent=4)
@@ -592,8 +578,6 @@ def extract_job_posting_information(uploaded_job):
     cleaned_response = response.text.strip(clean_json).strip("```").replace("\n", "")
 
     json_file = json.loads(cleaned_response)
-    # Save the result to the output file
-
     output_filepath = f"resume/job_posting.json"
     with open(output_filepath, "w", encoding="utf-8") as file_save:
         json.dump(json_file, file_save, ensure_ascii=False, indent=4)
@@ -719,7 +703,7 @@ def extract_job_posting_information_from_str(uploaded_job):
     cleaned_response = response.text.strip(clean_json).strip("```").replace("\n", "")
 
     json_file = json.loads(cleaned_response)
-    # Save the result to the output file
+
     output_filepath = f"resume/job_posting.json"
     with open(output_filepath, "w", encoding="utf-8") as file_save:
         json.dump(json_file, file_save, ensure_ascii=False, indent=4)

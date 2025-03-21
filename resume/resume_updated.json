@@ -17,10 +17,8 @@
             "end_date": "December 2023",
             "key": "Grupo Bit-Data Scientist",
             "achievement": [
-                "Programming and deployed machine learning, deep learning, and statistical models in Python to generate actionable business insights, including a Recommendation System that increased client sales by 21%.",
-                "Designed and deployed econometric models with exogenous data, applying data analytics to uncover additional insights beyond the client's data, creating new business opportunities. These insights increased information consumption by 15%.",
-                "Took the initiative to research and calculate recommendation system metrics using a partition matrix, and developed an alternative data processing approach that reduced processing time and cut costs by up to 50%. Driven by curiosity and a focus on innovation, I researched and implemented new technologies, including the Jax library, to leverage GPU computational power, achieving a 95% reduction in processing time.",
-                "Optimized algorithms for a forecasting model by leveraging Python, Numpy, and Polars libraries, resulting in a 98.47% improvement in processing time and an 85% reduction in peak memory usage for efficient implementation."
+                "As a participant in the Grupo Bit Business Challenge, I developed a customer segmentation model using Python and scikit-learn. This model increased the predicted accuracy of targeted marketing campaigns by 15%, contributing to the team's first-place win Lambton.",
+                "As a data analyst in lambton, I automated sales report generation by building an ETL pipeline with Spoon to ingest data from various CSV sources into Excel. This, combined with interactive pivot table slicers, enabled the sales team to improve customer engagement by 5%."
             ]
         }
     ]

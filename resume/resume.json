@@ -35,17 +35,13 @@
         "ETL",
         "Jupyter Notebook",
         "Software Development",
-        "Continuous learning",
         "Social Media Analytics",
         "Unix Shell Scripting",
         "Snowflake",
         "Data architectures",
         "AWS",
         "SQS",
-        "Lambda",
-        "Polars",
-        "Numpy",
-        "Jax library"
+        "Lambda"
     ],
     "soft_skills": [
         "Interpersonal Relationships",
@@ -53,7 +49,6 @@
         "Team Work",
         "Listening Effectively",
         "Personal Initiative",
-        "Self-driven",
         "Adaptability",
         "Detail-Oriented",
         "Problem-Solving",
@@ -63,6 +58,7 @@
         "Personal Development",
         "Oral – Written Communication",
         "Collaboration",
+        "Communication",
         "Innovation",
         "Leadership"
     ],
@@ -127,10 +123,8 @@
         }
     ],
     "professional_summary": "Dedicated and high-performing student actively pursuing a postgraduate degree in Big Data Analytics, supported by a bachelor's degree in Statistics and extensive hands-on experience as a Data Scientist and Machine Learning Engineer. My strength lies in developing sophisticated machine learning models, implementing MLOps strategies, and leveraging cutting-edge cloud technologies. With a strong dedication to ongoing growth, I keep pace with the latest advancements in technology. I have a proven history of deploying high-impact models that drive significant improvements in business operations. I excel in collaborative settings, effectively engaging with cross-functional teams to create actionable insights and innovative solutions. My contributions have received recognition for enhancing process efficiency, increasing scalability, and strengthening data-driven decision-making. I skillfully utilize tools such as Python, R, AWS, and GCP for model deployment, automation, and comprehensive data analysis, ensuring I consistently deliver outstanding results that elevate organizational success.",
-    "languages": [],
-    "certifications": [],
     "personal_information": {
-        "name": "Daniel Gonzalez",
+        "name": "DANIEL GONZALEZ",
         "phone": "4376620134",
         "email": "daniel.andres.gonzalez.menza@gmail.com",
         "addres": "Toronto, ON",

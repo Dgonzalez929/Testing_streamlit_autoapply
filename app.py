@@ -22,24 +22,24 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 def delete_folders():
-    """Elimina las carpetas 'resume' y 'output' si existen."""
+    "Delete the 'resume' and 'output' folders if they exist."
     folders_to_delete = ["resume", "output"]
 
     for folder in folders_to_delete:
         if os.path.exists(folder):
             shutil.rmtree(folder)
-            print(f"Carpeta eliminada: {folder}")  # Para depuración
-        os.makedirs(folder, exist_ok=True)  # Crear la carpeta nuevamente
+            print(f"Deleted folder: {folder}")
+        os.makedirs(folder, exist_ok=True)
 
-# Verifica si es la primera ejecución
 if "app_initialized" not in st.session_state:
-    st.session_state.app_initialized = True  # Marca como inicializada
-    delete_folders()  # Borra las carpetas solo una vez al inicia
+    st.session_state.app_initialized = True  
+    delete_folders()
 
 
 # Initialize session state
 if "page" not in st.session_state:
-    st.session_state.page = "Home"
+    st.session_state.page = "Home" 
+
 
 def go_to_page(page_name):
     st.session_state.page = page_name

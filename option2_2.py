@@ -3,7 +3,6 @@ from utils import extract_cv_information, extract_job_posting_information_from_s
 import json
 
 var_back_to_job_seleccion = "⬅️ Back to Job Selection"
-print("entro option 2_2")
 def run():
     st.markdown("<h1 style='text-align: center; font-size: 50px;'>Tailor My Resume for the Selected Jobs</h1>", unsafe_allow_html=True)
 
@@ -26,7 +25,7 @@ def run():
             resume_skills()
             resume_delete_experience_not_related()
             
-            # Verificar si todos los achievements están vacíos
+            # Check if all achievements are empty
             # Load the resume data
             file_path = "resume/resume_delete_experience_not_relate.json"
             with open(file_path, "r", encoding="utf-8") as file_load:
@@ -45,7 +44,7 @@ def run():
             
             else:
                 st.session_state.page == "analize_skills"
-                # Inicializar session state si no existe
+                # Initialize session state if it doesn't exist
                 if "achievements_pass" not in st.session_state:
                     st.session_state.achievements_pass = []
 
@@ -60,9 +59,9 @@ def run():
 
                 work_experience = resume_data.get("work_experience", [])
 
-                # Procesar los logros y validarlos
+                # Process achievements and validate them
                 for job in work_experience:
-                    st.write(f"### Evaluando logros para: {job['job_title']} en {job['company']}")
+                    st.write(f"### Evaluating achievements for: {job['job_title']} in {job['company']}")
                     
                     for achievement in job["achievement"]:
                         is_valid, feedback = validate_with_gemini(job['job_title'], achievement)
@@ -76,11 +75,11 @@ def run():
                                 {"job_title": job['job_title'], "achievement": achievement, "feedback": feedback,  "company":job['company'], "key":job['key']}
                             )
 
-                # Mostrar resultados
-                st.write("## ✅ Logros Validados")
+                # Show results
+                st.write("## ✅ Validated Achievements")
                 st.write(st.session_state.achievements_pass)
 
-                st.write("## ❌ Logros que necesitan mejora")
+                st.write("## ❌ Achievements that need improvement")
                 for item in st.session_state.achievements_do_not_pass:
                     st.write(f"- **{item['key']}**: {item['achievement']}")
 
@@ -102,4 +101,6 @@ def run():
     with col2:
         if st.button("🏠 Back to Home"):
             st.session_state.page = "Home"
+            if "app_initialized" in st.session_state:
+                del st.session_state.app_initialized
             st.rerun()

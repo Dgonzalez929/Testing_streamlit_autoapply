@@ -19,9 +19,9 @@ def run():
         return
 
     # MongoDB Connection
-    MONGO_URI = "mongodb+srv://DavidRocha:davidoscar@capstone.9ajag.mongodb.net/?retryWrites=true&w=majority&appName=Capstone"
-    MONGO_DB_NAME = "jobsDB"
-    MONGO_JOBS_COLLECTION = "jobsCollection"
+    MONGO_URI = st.secrets["api_keys"]["MONGODB_URI"]
+    MONGO_DB_NAME = st.secrets["api_keys"]["MONGODB_NAME"]
+    MONGO_JOBS_COLLECTION = st.secrets["api_keys"]["MONGODB_JOBS_COLLECTION"]
 
     client_mongo = pymongo.MongoClient(MONGO_URI)
     db = client_mongo[MONGO_DB_NAME]
@@ -62,14 +62,13 @@ def run():
         resume_skills()
         resume_delete_experience_not_related()
         
-        # Verificar si todos los achievements están vacíos
+        # Check if all achievements are empty
         # Load the resume data
         file_path = "resume/resume_delete_experience_not_relate.json"
         with open(file_path, "r", encoding="utf-8") as file_load:
             filter_to_continue = json.load(file_load)
 
         if all(not experience["achievement"] for experience in filter_to_continue["work_experience"]):
-            print("entro line 46")
             st.warning(
                 "⚠️ Sorry, none of your experiences match the job posting. "
                 "We recommend rewriting your achievements to better highlight relevant skills and trying again. "
@@ -83,7 +82,7 @@ def run():
         
         else:
             st.session_state.page == "analize_skills"
-            # Inicializar session state si no existe
+            # Initialize session state if it doesn't exist
             if "achievements_pass" not in st.session_state:
                 st.session_state.achievements_pass = []
 
@@ -98,9 +97,9 @@ def run():
 
             work_experience = resume_data.get("work_experience", [])
 
-            # Procesar los logros y validarlos
+            # Process achievements and validate them
             for job in work_experience:
-                st.write(f"### Evaluando logros para: {job['job_title']} en {job['company']}")
+                st.write(f"### Evaluating achievements for: {job['job_title']} in {job['company']}")
                 
                 for achievement in job["achievement"]:
                     is_valid, feedback = validate_with_gemini(job['job_title'], achievement)
@@ -114,11 +113,11 @@ def run():
                             {"job_title": job['job_title'], "achievement": achievement, "feedback": feedback,  "company":job['company'], "key":job['key']}
                         )
 
-            # Mostrar resultados
-            st.write("## ✅ Logros Validados")
+            # Show results
+            st.write("## ✅ Validated Achievements")
             st.write(st.session_state.achievements_pass)
 
-            st.write("## ❌ Logros que necesitan mejora")
+            st.write("## ❌ Achievements that need improvement")
             for item in st.session_state.achievements_do_not_pass:
                 st.write(f"- **{item['key']}**: {item['achievement']}")
 
@@ -139,4 +138,6 @@ def run():
             with col2:
                 if st.button("🏠 Back to Home"):
                     st.session_state.page = "Home"
+                    if "app_initialized" in st.session_state:
+                        del st.session_state.app_initialized
                     st.rerun()

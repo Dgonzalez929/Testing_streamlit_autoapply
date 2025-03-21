@@ -59,7 +59,7 @@ def run():
                 if st.button(f"Select {index}", key=f"select_{index}"):
                     st.session_state["selected_jobs"].append(row.to_dict())
 
-        st.write("### Job Selected by You")
+        st.write("### Job Selected By You")
         st.dataframe(pd.DataFrame(st.session_state["selected_jobs"]))
         
         # Proceed button
