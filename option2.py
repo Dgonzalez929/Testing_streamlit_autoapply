@@ -18,7 +18,7 @@ def run():
     collection = db[MONGO_JOBS_COLLECTION]
 
     # Load jobs from MongoDB
-    jobs_data = list(collection.find({}))  # Retrieve everything
+    jobs_data = list(collection.find({}).limit(100))  # Retrieve everything
 
     if not jobs_data:
         st.error("No job postings found in the database.")
