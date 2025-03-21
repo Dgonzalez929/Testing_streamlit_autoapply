@@ -1,7 +1,5 @@
 import streamlit as st
 import pandas as pd
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
 from utils import extract_key_words_from_cv, extract_cv_information, jaccard_similarity
 
 def normalize_keyword_list(keyword_list):

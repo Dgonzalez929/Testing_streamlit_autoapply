@@ -1,5 +1,5 @@
 import streamlit as st
-from utils import extract_cv_information, extract_job_posting_information_from_str, resume_education_info_personal,resume_promt_summary,resume_delete_experience_not_related,resume_skills, validate_with_gemini
+from utils import extract_job_posting_information_from_str, resume_education_info_personal,resume_promt_summary,resume_delete_experience_not_related,resume_skills, validate_with_gemini
 import json
 
 var_back_to_job_seleccion = "⬅️ Back to Job Selection"
