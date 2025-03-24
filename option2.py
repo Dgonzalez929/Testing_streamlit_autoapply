@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import pymongo
+import os
 
 def run():
     st.markdown("""
@@ -17,19 +18,19 @@ def run():
     db = client_mongo[MONGO_DB_NAME]
     collection = db[MONGO_JOBS_COLLECTION]
 
-    # Load jobs from MongoDB
-    jobs_data = list(collection.find({}))  # Retrieve everything
+    # Ruta al archivo local
+    parquet_file = "parquet/jobs_data.parquet"
 
-    if not jobs_data:
-        st.error("No job postings found in the database.")
-        return
-    
-    for job in jobs_data:
-        job["_id"] = str(job["_id"])  # Convert ObjectId to string
-
+    # Si existe el archivo .parquet, lo cargamos desde allí
+    if os.path.exists(parquet_file):
+        df = pd.read_parquet(parquet_file)
+    else:
+        # Load jobs from MongoDB
+        jobs_data = list(collection.find({}))  # Retrieve everything
+        df = pd.DataFrame(jobs_data)
+        df["_id"] = df["_id"].astype(str)
 
     # Convert to DataFrame
-    df = pd.DataFrame(jobs_data)
     df = df.rename(columns={"_id": "Job ID", "Title": "Job Title", "Provincia": "Province", "Keyword": "Category"})
  
     # Fill NaN values
