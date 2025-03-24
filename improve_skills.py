@@ -103,7 +103,6 @@ def run():
             # Extract company names from work experience
             jobs_keys = list({exp["key"] for exp in resume_data.get("work_experience", [])})
 
-            st.session_state.page == "add_skills"
             # Initialize the session state if it does not exist
             if "jobs_keys" not in st.session_state:
                 st.session_state.jobs_keys = jobs_keys

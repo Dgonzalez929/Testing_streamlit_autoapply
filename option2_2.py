@@ -36,7 +36,6 @@ def run():
                 st.rerun()
         
         else:
-            st.session_state.page == "analize_skills"
             
             # Initialize session state if it doesn't exist
             if "achievements_pass" not in st.session_state:
