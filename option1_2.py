@@ -20,7 +20,6 @@ def run():
 
     # Si existe el archivo .parquet, lo cargamos desde allí
     if os.path.exists(parquet_file):
-        st.info("Loading data from cached .parquet file...")
         df = pd.read_parquet(parquet_file)
     else:
         # Load jobs from MongoDB
