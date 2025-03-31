@@ -80,7 +80,7 @@ def run():
     st.write(f"Showing {start_idx + 1} - {min(end_idx, total_rows)} of {total_rows} jobs")
 
     # Display paginated DataFrame
-    st.dataframe(filtered_df.iloc[start_idx:end_idx])
+    st.dataframe(filtered_df.iloc[start_idx:end_idx].drop(columns=["key_word_app"]))
 
     # Job Selection
     print(filtered_df.shape)
@@ -89,6 +89,7 @@ def run():
     if st.button("🤖 Find Best Job Matches with AI Recommender"):
         st.session_state['filtered_jobs'] = filtered_df
         st.session_state.page = "Option2_1"
+        st.session_state.control = False
         st.rerun()
 
     # Back to Home

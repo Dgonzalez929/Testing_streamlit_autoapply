@@ -5,7 +5,7 @@ import google.generativeai as genai
 from io import BytesIO
 import numpy as np
 import re
-from utils import join_all_resume_json, generate_cv,resume_promt_summary,ats_score_evaluation_post,extract_cv_information_final
+from utils import join_all_resume_json, generate_cv,resume_promt_summary,ats_score_evaluation_post
 import os
 
 
