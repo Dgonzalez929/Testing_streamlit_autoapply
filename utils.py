@@ -12,8 +12,8 @@ your_api_key = st.secrets["api_keys"]["GEMINI_API_KEY"]
 model_gemini = "models/gemini-2.0-flash"
 clean_json = "```json\n"
 
-def extract_keywords_with_gemini():
 
+def extract_keywords_with_gemini(max_retries=3):
     with open("resume/resume.json", "r", encoding="utf-8") as file:
         resume_json = json.load(file)
 
@@ -30,6 +30,7 @@ Resume content:
 
 Return only a Python list of keywords, no explanation.
 """
+
     model = genai.GenerativeModel(
         model_gemini,
         generation_config={
@@ -40,57 +41,60 @@ Return only a Python list of keywords, no explanation.
         }
     )
 
-    try:
-        response = model.generate_content(validation_prompt)
-        keywords = response.text.strip()
-        if keywords.startswith("```"):
-            keywords = keywords.strip("```python").strip("```").strip()
-        keywords = eval(keywords)
-        if isinstance(keywords, list):
-            return keywords
-    except Exception as e:
-        print(f"❌ Error extracting keywords from Gemini: {e}")
-    
-    return []
+    attempt = 0
+    while attempt < max_retries:
+        try:
+            response = model.generate_content(validation_prompt)
+            keywords = response.text.strip()
+            if keywords.startswith("```"):
+                keywords = keywords.strip("```python").strip("```").strip()
+            keywords = eval(keywords)
+            if isinstance(keywords, list):
+                return keywords
+        except Exception as e:
+            print(f"❌ Error on attempt {attempt + 1}: {e}")
+            attempt += 1
+            time.sleep(1)
 
+    return []
 
 def key_words_match_jobs_resume(
     f_key_words_candidate,
     f_df_text,
-    max_retries=2
+    max_retries=3
 ):
     genai.configure(api_key=your_api_key)
 
     validation_prompt = f"""
-    You are an AI job matching assistant.
+You are an AI job matching assistant.
 
-    Given a candidate with the following keywords:
-    {f_key_words_candidate}
+Given a candidate with the following keywords:
+{f_key_words_candidate}
 
-    And the following job postings:
-    {f_df_text}
+And the following job postings:
+{f_df_text}
 
-    For each job, return:
-    - The `Job ID` of the job
-    - The number of keywords from `key_words_app` that match the candidate's skills (`matches`)
-    - The total number of keywords in the job's `key_words_app` (`total_of_keywords`)
-    - The Jaccard similarity between the candidate's keywords and the job's `key_words_app`, calculated as:
-  (number of overlapping keywords) / (total number of unique keywords between both sets)* 100,
+For each job, return:
+- The `Job ID` of the job
+- The number of keywords from `key_words_app` that match the candidate's skills (`matches`)
+- The total number of keywords in the job's `key_words_app` (`total_of_keywords`)
+- The Jaccard similarity between the candidate's keywords and the job's `key_words_app`, calculated as:
+  (number of overlapping keywords) / (total number of unique keywords between both sets) * 100,
   rounded to two decimal places. Name this field `similarity`
 
-    Be flexible. Accept close matches or inferred relationships (e.g., "Cloud Computing" ↔ "AWS", or "ETL" ↔ "Spoon").
+Be flexible. Accept close matches or inferred relationships (e.g., "Cloud Computing" ↔ "AWS", or "ETL" ↔ "Spoon").
 
-    Only return the **top 10 job postings** sorted in **descending order by percentage**.
+Only return the **top 10 job postings** sorted in **descending order by percentage**.
 
-    🧾 Format your answer strictly as a Python list of dictionaries like this:
-    [
-    {{'Job ID': 'abc123', 'matches': 7, 'total_of_keywords': 10, 'similarity': 70.0}},
-    {{'Job ID': 'abc456', 'matches': 3, 'total_of_keywords': 6, 'similarity': 50.0}}
-    ]
+Format your answer strictly as a Python list of dictionaries like this:
+[
+{{'Job ID': 'abc123', 'matches': 7, 'total_of_keywords': 10, 'similarity': 70.0}},
+{{'Job ID': 'abc456', 'matches': 3, 'total_of_keywords': 6, 'similarity': 50.0}}
+]
 
-    ❌ Do not include any extra fields, explanations, or markdown formatting.
-    Return only the raw Python list.
-    """
+Do not include any extra fields, explanations, or markdown formatting.
+Return only the raw Python list.
+"""
 
     model = genai.GenerativeModel(
         model_gemini,
@@ -115,18 +119,19 @@ def key_words_match_jobs_resume(
                 isinstance(item, dict) and
                 "Job ID" in item and
                 "matches" in item and
-                "total_of_keywords" in item
+                "total_of_keywords" in item and
+                "similarity" in item
                 for item in result_data
             ):
                 return result_data
 
             else:
-                print(f"⚠️ Intento {attempt + 1}: Formato inválido. Reintentando...")
+                print(f"⚠️ Attempt {attempt + 1}: Invalid format. Retrying...")
                 attempt += 1
                 time.sleep(1)
 
         except Exception as e:
-            print(f"❌ Error en intento {attempt + 1}: {e}")
+            print(f"❌ Error on attempt {attempt + 1}: {e}")
             attempt += 1
             time.sleep(1)
 
@@ -160,8 +165,7 @@ def export_match_and_missing_skills():
         print(f"✅ Saved: {missing_path}")
 
 
-def ats_score_evaluation_pre():
-
+def ats_score_evaluation_pre(max_retries=3):
     with open("resume/resume.json", "r", encoding="utf-8") as file:
         resume = json.load(file)
 
@@ -283,41 +287,45 @@ def ats_score_evaluation_pre():
         model_gemini,
         system_instruction=system_instructions,
         generation_config={
-        "temperature": 0.0,
-        "top_p": 1.0,
-        "top_k": 1,
-        "max_output_tokens": 1024
-    }
+            "temperature": 0.0,
+            "top_p": 1.0,
+            "top_k": 1,
+            "max_output_tokens": 1024
+        }
     )
 
-    response = model.generate_content(prompt)
+    attempt = 0
+    result_json = None
 
-    response_text = response.text.strip()
+    while attempt < max_retries:
+        try:
+            response = model.generate_content(prompt)
+            response_text = response.text.strip()
+            if not response_text:
+                raise ValueError("Empty response from Gemini.")
 
-    if not response_text:
-        print("❌ Empty response from Gemini.")
+            response_clean = (
+                response_text.strip("`").replace("json", "").replace("JSON", "").strip()
+            )
+
+            result_json = json.loads(response_clean)
+            break  # Success
+        except Exception as e:
+            print(f"Error on attempt {attempt + 1}: {e}")
+            attempt += 1
+            time.sleep(1)
+
+    if result_json is None:
+        print("Failed to get valid JSON response from Gemini after multiple attempts.")
         return
 
-    response_clean = (
-        response_text.strip("`").replace("json", "").replace("JSON", "").strip()
-    )
-
-    try:
-        result_json = json.loads(response_clean)
-    except json.JSONDecodeError as e:
-        print("❌ Error decoding JSON:", e)
-        print("🔍 Raw Gemini output:")
-        print(response_clean)
-        return
-
-    output_filepath = f"resume/ats_score_evaluation_pre.json"
+    output_filepath = "resume/ats_score_evaluation_pre.json"
     with open(output_filepath, "w", encoding="utf-8") as file:
         json.dump(result_json, file, ensure_ascii=False, indent=4)
-        print(f"✅ Output saved to '{output_filepath}'")
+        print(f"Saved ATS evaluation to: {output_filepath}")
 
-def ats_score_evaluation_post():
-
-    # Load files
+def ats_score_evaluation_post(max_retries=3):
+    # Load input files
     with open("resume/resume_final_to_word.json", "r", encoding="utf-8") as file:
         resume = json.load(file)
 
@@ -327,7 +335,7 @@ def ats_score_evaluation_post():
     with open("resume/job_posting.json", "r", encoding="utf-8") as file:
         job_posting = json.load(file)
 
-    # Extract fields
+    # Extract fields from job posting and resume
     job_title = job_posting.get("job_title", "")
     job_summary = job_posting.get("job_description", "")
     job_tech_skills = job_posting.get("technical_skills", [])
@@ -451,43 +459,49 @@ def ats_score_evaluation_post():
     {resume_experience}
     """
 
+
+    # Configure Gemini and run the model with retry logic
     genai.configure(api_key=your_api_key)
     model = genai.GenerativeModel(
         model_gemini,
         system_instruction=system_instructions,
         generation_config={
-        "temperature": 0.0,
-        "top_p": 1.0,
-        "top_k": 1,
-        "max_output_tokens": 1024
-    }
+            "temperature": 0.0,
+            "top_p": 1.0,
+            "top_k": 1,
+            "max_output_tokens": 1024
+        }
     )
 
-    response = model.generate_content(prompt)
+    attempt = 0
+    result_json = None
 
-    response_text = response.text.strip()
+    while attempt < max_retries:
+        try:
+            response = model.generate_content(prompt)
+            response_text = response.text.strip()
+            if not response_text:
+                raise ValueError("Empty response from Gemini.")
 
-    if not response_text:
-        print("❌ Empty response from Gemini.")
+            response_clean = (
+                response_text.strip("`").replace("json", "").replace("JSON", "").strip()
+            )
+
+            result_json = json.loads(response_clean)
+            break  # Success
+        except Exception as e:
+            print(f"Error on attempt {attempt + 1}: {e}")
+            attempt += 1
+            time.sleep(1)
+
+    if result_json is None:
+        print("Failed to get a valid JSON response from Gemini after multiple attempts.")
         return
 
-    response_clean = (
-        response_text.strip("`").replace("json", "").replace("JSON", "").strip()
-    )
-
-    try:
-        result_json = json.loads(response_clean)
-    except json.JSONDecodeError as e:
-        print("❌ Error decoding JSON:", e)
-        print("🔍 Raw Gemini output:")
-        print(response_clean)
-        return
-
-    output_filepath = f"resume/ats_score_evaluation_post.json"
+    output_filepath = "resume/ats_score_evaluation_post.json"
     with open(output_filepath, "w", encoding="utf-8") as file:
         json.dump(result_json, file, ensure_ascii=False, indent=4)
-        print(f"✅ Output saved to '{output_filepath}'")
-
+        print(f"Saved ATS post-evaluation to: {output_filepath}")
 
 def clean_text(text):
     if not isinstance(text, str) or not text.strip():
@@ -776,46 +790,70 @@ def resume_promt_summary():
         print(f"Output saved to '{output_filepath}'.")
 
 
-def resume_delete_experience_not_related():
+def resume_delete_experience_not_related(max_retries=3):
+    resume_path = "resume/resume.json"
+    job_path = "resume/job_posting.json"
+    output_path = "resume/resume_delete_experience_not_relate.json"
 
-    input_filepath = f"resume/resume.json"
-    with open(input_filepath, "r", encoding="utf-8") as file_load:
-       resume = json.load(file_load)
+    # Load resume
+    with open(resume_path, "r", encoding="utf-8") as file_load:
+        resume = json.load(file_load)
     
-    job_experience = {"work_experience":resume.get("work_experience", {})}
-    
-    input_filepath = f"resume/job_posting.json"
-    with open(input_filepath, "r", encoding="utf-8") as file_load:
-       job_offer = json.load(file_load)
-    
+    job_experience = {"work_experience": resume.get("work_experience", {})}
+
+    # Load job posting
+    with open(job_path, "r", encoding="utf-8") as file_load:
+        job_offer = json.load(file_load)
+
+    # System instructions for Gemini
     system_instructions = """
-    You are an HR specialist skilled in processing and analyzing resumes. Your task is to analyze each achievement in the work experience section and remove those that are not relevant to the given job offer.
+You are an HR specialist skilled in processing and analyzing resumes. Your task is to analyze each achievement in the work experience section and remove those that are not relevant to the given job offer.
 
-    **Instructions:**
-    - Use only the information available in the resume. Do not infer or add any details that are not explicitly mentioned.
-    - Evaluate each achievement individually and determine if the experience and skills it describes align with the job posting.
-    - Remove achievements that are not relevant to the job offer.
-    - Maintain the original JSON format, ensuring that only the non-relevant achievements are removed.
-    - Do not provide any explanations or extra text, only return the modified JSON.
+Instructions:
+- Use only the information available in the resume. Do not infer or add any details that are not explicitly mentioned.
+- Evaluate each achievement individually and determine if the experience and skills it describes align with the job posting.
+- Remove achievements that are not relevant to the job offer.
+- Maintain the original JSON format, ensuring that only the non-relevant achievements are removed.
+- Do not provide any explanations or extra text, only return the modified JSON.
+"""
 
-    **Output Format:**
-    (Same as input, but with non-relevant achievements removed)
-    """
-
-    genai.configure(api_key = your_api_key)
+    # Configure and call Gemini
+    genai.configure(api_key=your_api_key)
     model = genai.GenerativeModel(
-    model_gemini,
-    system_instruction=system_instructions,
+        model_gemini,
+        system_instruction=system_instructions,
     )
 
-    response = model.generate_content(f"The work experience seccion to analyze is {job_experience} and the job offer is {job_offer}")
-    cleaned_response = response.text.strip(clean_json).strip("```").replace("\n", "")
-    json_file = json.loads(cleaned_response)
-    # Save the result to the output file
-    output_filepath = f"resume/resume_delete_experience_not_relate.json"
-    with open(output_filepath, "w", encoding="utf-8") as file_save:
-        json.dump(json_file, file_save, ensure_ascii=False, indent=4)
-        print(f"Output saved to '{output_filepath}'.")
+    prompt = f"The work experience section to analyze is: {json.dumps(job_experience)}\n\nThe job offer is: {json.dumps(job_offer)}"
+
+    attempt = 0
+    result_json = None
+
+    while attempt < max_retries:
+        try:
+            response = model.generate_content(prompt)
+            response_text = response.text.strip()
+            response_clean = (
+                response_text.strip("`").replace("json", "").replace("JSON", "").strip()
+            )
+            result_json = json.loads(response_clean)
+            if isinstance(result_json, dict) and "work_experience" in result_json:
+                break
+            else:
+                raise ValueError("Invalid format: missing 'work_experience'")
+        except Exception as e:
+            print(f"Error on attempt {attempt + 1}: {e}")
+            attempt += 1
+            time.sleep(1)
+
+    if result_json is None:
+        print("Failed to get a valid JSON response from Gemini after multiple attempts.")
+        return
+
+    # Save the result
+    with open(output_path, "w", encoding="utf-8") as file_save:
+        json.dump(result_json, file_save, ensure_ascii=False, indent=4)
+        print(f"Saved cleaned resume to: {output_path}")
 
 
 def customize_cv() -> dict:

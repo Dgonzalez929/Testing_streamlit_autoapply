@@ -22,7 +22,6 @@ def run():
 
     if (len(st.session_state.achievements_do_not_pass) > 0):
         to_improve = st.session_state.achievements_do_not_pass[0]
-        print(to_improve)
         st.write(f"**Current Achievement:** {to_improve['achievement']}")
         st.write(f"**Hint to Improve achievement:** {to_improve['feedback']}")
         # improved_achievement = st.text_input("Please rewrite the achievement with improvements:", value=to_improve["feedback"])
@@ -30,7 +29,6 @@ def run():
             "Please describe your achievement, including how you obtained it and a metric or result achieved",
             key = to_improve['achievement']
         )
-        print(improved_achievement)
 
         if improved_achievement:
             is_valid, feedback = validate_with_gemini(to_improve['job_title'], improved_achievement)
@@ -97,11 +95,9 @@ def run():
         # Initialize the session state if it does not exist
         if "jobs_keys" not in st.session_state:
             st.session_state.jobs_keys = jobs_keys
-            print(st.session_state.jobs_keys)
 
         if "skills_add_achivments" not in st.session_state:
             st.session_state.skills_add_achievements = missing_skills
-            print(st.session_state.skills_add_achievements)
 
         st.session_state.page = "add_skills"
         st.session_state.skill_pass = []
